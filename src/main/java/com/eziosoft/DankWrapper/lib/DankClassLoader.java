@@ -16,14 +16,12 @@ import java.util.jar.JarFile;
 
 public class DankClassLoader  extends URLClassLoader {
 
-    private List<URL> urls = new ArrayList<URL>();
     private Map<String, Class<?>> cache = new HashMap<String, Class<?>>();
     private URLClassLoader trash;
 
     public DankClassLoader(URL[] urls, ClassLoader parent) {
         super(urls, parent);
-        this.urls.addAll(Arrays.asList(urls));
-        this.trash = new URLClassLoader(Launch.urlclasspath.toArray(new URL[]{}), Patches.class.getClassLoader());
+        this.trash = new URLClassLoader(urls, Patches.class.getClassLoader());
     }
 
     @Override
@@ -88,5 +86,11 @@ public class DankClassLoader  extends URLClassLoader {
         }
 
         return null;
+    }
+
+    @Override
+    public Class<?> loadClass(String name) throws ClassNotFoundException {
+        if (Launch.isdebug ) System.out.println("Loading class " + name);
+        return super.loadClass(name);
     }
 }
