@@ -44,7 +44,7 @@ public class PatchCode {
         MethodNode patch = new MethodNode();
         Label patchlabel = new Label();
         patch.visitLabel(patchlabel);
-        patch.visitLineNumber(99999999, patchlabel);
+        patch.visitLineNumber(420, patchlabel);
         patch.visitMethodInsn(INVOKESTATIC, "com/eziosoft/DankWrapper/Patches", "workDirPatch", "()Ljava/io/File;");
         patch.visitFieldInsn(PUTSTATIC, "net/minecraft/client/Minecraft", workDirNode.name, "Ljava/io/File;");
         // insert the patch

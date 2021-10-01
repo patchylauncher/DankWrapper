@@ -21,13 +21,7 @@ public class Launch {
         // do stuff here or something idk
         System.out.println(System.getProperty("java.class.path"));
         String[] cpsplit = System.getProperty("java.class.path").split(";");
-        List<String> libs = new ArrayList<String>();
-        libs.add("H:/danktest/minecraft.jar");
-        for (File f : new File("H:/danktest/libs").listFiles()){
-            System.out.println("found " + f.getName());
-            libs.add(f.getAbsolutePath());
-        }
-        for (String s : libs){
+        for (String s : cpsplit){
             urlclasspath.add(new File(s).toURI().toURL());
         }
         loader = new DankClassLoader(urlclasspath.toArray(new URL[]{}), DankClassLoader.class.getClassLoader());
