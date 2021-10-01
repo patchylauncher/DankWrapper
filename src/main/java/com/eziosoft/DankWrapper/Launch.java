@@ -27,6 +27,6 @@ public class Launch {
         loader = new DankClassLoader(urlclasspath.toArray(new URL[]{}), DankClassLoader.class.getClassLoader());
         //Class<?> blenders = Class.forName("net.minecraft.client.Minecraft", true, loader);
         Class<?> blenders = loader.findClass("net.minecraft.client.Minecraft");
-        blenders.getMethod("main", String[].class).invoke(null, (Object) new String[]{"e","${auth_session}", "--gameDir", "H:\\danktest","--assetsDir","${game_assets}"});
+        blenders.getMethod("main", String[].class).invoke(null, (Object) args);
     }
 }
