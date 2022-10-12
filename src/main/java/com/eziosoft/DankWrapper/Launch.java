@@ -2,6 +2,7 @@ package com.eziosoft.DankWrapper;
 
 import com.eziosoft.DankWrapper.injectors.BasicInjector;
 import com.eziosoft.DankWrapper.lib.DankClassLoader;
+import com.eziosoft.DankWrapper.skinpatch.SkinPatchFactory;
 import org.apache.commons.cli.*;
 
 import java.io.File;
@@ -17,6 +18,8 @@ public class Launch {
     public static DankClassLoader loader;
     public static List<URL> urlclasspath = new ArrayList<URL>();
     public static boolean isdebug = false;
+
+    public static String skinid = "";
 
     public static void main(String[] args) throws MalformedURLException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, ParseException {
         System.out.println("Starting DankWrapper...");
@@ -53,9 +56,14 @@ public class Launch {
                 }
             }
         }
+        // for debug output if required
         Option debug = new Option("de", false, "Enable debug features");
         debug.setOptionalArg(true);
         opts.addOption(debug);
+        // for skinpatching
+        Option skin = new Option("s", true, "Enable SkinPatch");
+        skin.setOptionalArg(true);
+        opts.addOption(skin);
         // parse the options
         CommandLine cmd = new DefaultParser().parse(opts, args, true);
         for (BasicInjector b : injectors){
@@ -67,6 +75,13 @@ public class Launch {
         if (cmd.hasOption("de")){
             isdebug = !isdebug;
             total++;
+        }
+        // skinpatching flag
+        if (cmd.hasOption("s")){
+            URL.setURLStreamHandlerFactory(new SkinPatchFactory());
+            total++;
+            total++;
+            skinid = cmd.getOptionValue("s");
         }
         // setup our custom classloader
         System.out.println(System.getProperty("java.class.path"));

@@ -36,6 +36,7 @@ public class DankClassLoader  extends URLClassLoader {
         this.exceptions.add("org.apache.logging.");
         this.exceptions.add("com.eziosoft.DankWrapper.");
         this.exceptions.add("javax.");
+        this.exceptions.add("org.w3c.");
 
     }
 
@@ -79,7 +80,7 @@ public class DankClassLoader  extends URLClassLoader {
         System.out.println("Attempting to load class " + name);
         for (String s : exceptions){
             if (name.startsWith(s)){
-                System.out.println("Class is listed in exception!");
+                System.out.println("Class is listed in exceptions, loading with parent...");
                 return parent.loadClass(name);
             }
         }
