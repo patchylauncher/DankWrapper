@@ -1,6 +1,7 @@
 package com.eziosoft.DankWrapper.lib;
 
 import com.eziosoft.DankWrapper.Launch;
+import com.eziosoft.DankWrapper.injectors.BasicInjector;
 import org.apache.commons.io.IOUtils;
 
 import java.io.Closeable;
@@ -22,6 +23,7 @@ public class DankClassLoader  extends URLClassLoader {
     private final URLClassLoader parent;
     private final Set<String> exceptions = new HashSet<String>();
     private final List<String> invalidClassCache = new ArrayList<String>();
+    private List<BasicInjector> injectors = new ArrayList<BasicInjector>();
 
     public DankClassLoader(URL[] urls, ClassLoader parent) {
         super(urls, null);
@@ -35,6 +37,10 @@ public class DankClassLoader  extends URLClassLoader {
         this.exceptions.add("com.eziosoft.DankWrapper.");
         this.exceptions.add("javax.");
 
+    }
+
+    public void setInjectors(List<BasicInjector> in){
+        this.injectors = in;
     }
 
     public void addLoaderExceptions(String exc){
@@ -90,8 +96,10 @@ public class DankClassLoader  extends URLClassLoader {
         byte[] req = readClassBinsry(name);
         byte[] patched = null;
         try {
-            if ("net.minecraft.client.Minecraft".equals(name)) {
-                patched = PatchCode.PatchDirImageIO(req, name);
+            for (BasicInjector inject : injectors){
+                if (inject.targetclass.equals(name)){
+                    patched = inject.inject(req);
+                }
             }
         } catch (Exception e){
             System.err.println("Error trying to patch class!");
