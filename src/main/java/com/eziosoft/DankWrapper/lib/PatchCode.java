@@ -5,7 +5,6 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
-import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.MethodNode;
 
 import java.io.File;
@@ -16,9 +15,9 @@ import static org.objectweb.asm.Opcodes.*;
 public class PatchCode {
 
     // genaric vanilla directory & imageio patch
-    public static byte[] PatchDirImageIO(Class<?> input, String name) throws IOException {
+    public static byte[] PatchDirImageIO(byte[] input, String name) throws IOException {
         ClassNode node = new ClassNode();
-        ClassReader read = new ClassReader(input.getClassLoader().getResourceAsStream(name.replace(".", "/").concat(".class")));
+        ClassReader read = new ClassReader(input);
         read.accept(node, ClassReader.EXPAND_FRAMES);
         // find main method
         MethodNode main = null;
