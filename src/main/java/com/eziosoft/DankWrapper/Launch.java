@@ -101,9 +101,6 @@ public class Launch {
                 urlclasspath.addAll(Arrays.asList(e));
             }
         }
-        for (URL e : urlclasspath){
-            System.err.println(e.getPath());
-        }
         loader = new DankClassLoader(urlclasspath.toArray(new URL[]{}), DankClassLoader.class.getClassLoader());
         // give it our injectors
         loader.setInjectors(injectors);
