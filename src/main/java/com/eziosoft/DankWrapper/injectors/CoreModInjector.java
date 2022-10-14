@@ -133,7 +133,7 @@ public class CoreModInjector extends BasicInjector{
                     System.out.println("Found coremod " + f.getName());
                     mods.add(f);
                 } else if (f.getName().endsWith(".zip")){
-                    System.out.println("Found zip file" + f.getName());
+                    System.out.println("Found zip file " + f.getName());
                     mods.add(f);
                 } else {
                     System.out.println("Ignoring file " + f.getName());
