@@ -24,7 +24,7 @@ public class Launch {
     public static void main(String[] args) throws MalformedURLException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, ParseException {
         System.out.println("Starting DankWrapper...");
         // first we need to get all the injectors specified at the command line
-        String[] inject = args[0].split(";");
+        String[] inject = args[0].split(":");
         // get rid of the first argument
         args = Arrays.copyOfRange(args, 1, args.length);
         List<BasicInjector> injectors = new ArrayList<BasicInjector>();
@@ -44,16 +44,20 @@ public class Launch {
         Options opts = new Options();
         int total = 0;
         for (BasicInjector b : injectors){
-            if (b.hasOptions){
-                Option opt = new Option(b.shortarg, b.acceptsParams, b.desc);
-                opt.setRequired(b.required);
-                opts.addOption(opt);
-                if (b.required){
-                    total++;
-                    if (b.acceptsParams){
+            if (!opts.hasShortOption(b.shortarg)) {
+                if (b.hasOptions) {
+                    Option opt = new Option(b.shortarg, b.acceptsParams, b.desc);
+                    opt.setRequired(b.required);
+                    opts.addOption(opt);
+                    if (b.required) {
                         total++;
+                        if (b.acceptsParams) {
+                            total++;
+                        }
                     }
                 }
+            } else {
+                System.err.println("An injector tried to redefine the options " + b.shortarg);
             }
         }
         // for debug output if required
@@ -88,6 +92,17 @@ public class Launch {
         String[] cpsplit = System.getProperty("java.class.path").split(";");
         for (String s : cpsplit){
             urlclasspath.add(new File(s).toURI().toURL());
+        }
+        // init injectors and add whatever they need to the classpath
+        for (BasicInjector i : injectors){
+            i.Initialize();
+            URL[] e = i.getClassPathItems();
+            if (e != null){
+                urlclasspath.addAll(Arrays.asList(e));
+            }
+        }
+        for (URL e : urlclasspath){
+            System.err.println(e.getPath());
         }
         loader = new DankClassLoader(urlclasspath.toArray(new URL[]{}), DankClassLoader.class.getClassLoader());
         // give it our injectors

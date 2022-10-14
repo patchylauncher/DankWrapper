@@ -10,6 +10,7 @@ import org.objectweb.asm.tree.MethodNode;
 
 import javax.imageio.ImageIO;
 import java.io.File;
+import java.net.URL;
 
 import static org.objectweb.asm.Opcodes.*;
 
@@ -73,8 +74,23 @@ public class MojangVanillaFix extends BasicInjector{
     }
 
     @Override
+    public byte[] inject(byte[] input, String name) throws Exception {
+        return input;
+    }
+
+    @Override
     public void AcceptArgument(String input) {
         workdir = input;
+    }
+
+    @Override
+    public void Initialize() {
+        return;
+    }
+
+    @Override
+    public URL[] getClassPathItems() {
+        return null;
     }
 
     public static File VanillaPatch(){

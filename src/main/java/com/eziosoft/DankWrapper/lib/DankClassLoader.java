@@ -56,7 +56,7 @@ public class DankClassLoader  extends URLClassLoader {
         }
     }
 
-    private byte[] readClassBinsry(String weed) {
+    private byte[] readClassBinary(String weed) {
         InputStream in = null;
         try {
             String path = weed.replaceAll("\\.", "/").concat(".class");
@@ -77,10 +77,10 @@ public class DankClassLoader  extends URLClassLoader {
 
     @Override
     public Class<?> findClass(String name) throws ClassNotFoundException{
-        System.out.println("Attempting to load class " + name);
+        if (Launch.isdebug) System.out.println("Attempting to load class " + name);
         for (String s : exceptions){
             if (name.startsWith(s)){
-                System.out.println("Class is listed in exceptions, loading with parent...");
+                if (Launch.isdebug) System.out.println("Class is listed in exceptions, loading with parent...");
                 return parent.loadClass(name);
             }
         }
@@ -89,17 +89,19 @@ public class DankClassLoader  extends URLClassLoader {
             throw new ClassNotFoundException("BRUH! Invalid class!");
         }
         if (cache.containsKey(name)){
-            System.out.println("Class in cache, returning that version...");
+            if (Launch.isdebug) System.out.println("Class in cache, returning that version...");
             return cache.get(name);
         }
-        System.out.println("Loading class manually...");
+        if (Launch.isdebug) System.out.println("Loading class manually...");
         // we cheat here by using a second class loader to bypass duplicate definition errors
-        byte[] req = readClassBinsry(name);
+        byte[] req = readClassBinary(name);
         byte[] patched = null;
         try {
             for (BasicInjector inject : injectors){
                 if (inject.targetclass.equals(name)){
                     patched = inject.inject(req);
+                } else if (!name.contains(".") && inject.targetclass.equals("nopackage")){
+                    patched = inject.inject(req, name);
                 }
             }
         } catch (Exception e){
@@ -113,21 +115,29 @@ public class DankClassLoader  extends URLClassLoader {
         // init codesigning array
         CodeSigner[] sign = null;
         // get a class file and then get the signers from that
-        if (url instanceof JarURLConnection){
-            JarURLConnection jurlc = (JarURLConnection) url;
-            JarFile jar;
-            JarEntry ent = null;
-            try {
-                jar = jurlc.getJarFile();
-                if (jar != null && jar.getManifest() != null){
-                    ent = jar.getJarEntry(filename);
+        try {
+            if (url instanceof JarURLConnection) {
+                JarURLConnection jurlc = (JarURLConnection) url;
+                JarFile jar;
+                JarEntry ent = null;
+                try {
+                    jar = jurlc.getJarFile();
+                    if (jar != null && jar.getManifest() != null) {
+                        ent = jar.getJarEntry(filename);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    System.exit(-2);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.exit(-2);
+                assert ent != null;
+                sign = ent.getCodeSigners();
             }
-            assert ent != null;
-            sign = ent.getCodeSigners();
+        } catch (NullPointerException e){
+            if (Launch.isdebug) {
+                System.err.println("Caught fatal error while trying to get code signers");
+                System.err.println("Error is as follows");
+                e.printStackTrace();
+            }
         }
         // ok that sucked but now we can sign the code correctly
         CodeSource code = url == null ? null : new CodeSource(url.getURL(), sign);
@@ -139,7 +149,7 @@ public class DankClassLoader  extends URLClassLoader {
                 clazz = defineClass(name, req, 0, req.length, code);
             } else {
                 this.invalidClassCache.add(name);
-                throw new ClassNotFoundException("Bruh: invalid/nonexistent class");
+                throw new ClassNotFoundException("Bruh: invalid/nonexistent class " + name);
             }
         }
         cache.put(name, clazz);
@@ -172,13 +182,13 @@ public class DankClassLoader  extends URLClassLoader {
 
     @Override
     public URL findResource(String resource){
-        System.out.println("findResource: " + resource);
+        if (Launch.isdebug) System.out.println("findResource: " + resource);
         return parent.findResource(resource);
     }
 
     @Override
     public URL getResource(String resource){
-        System.out.println("getResource: " + resource);
+        if (Launch.isdebug) System.out.println("getResource: " + resource);
         return parent.getResource(resource);
     }
 }
