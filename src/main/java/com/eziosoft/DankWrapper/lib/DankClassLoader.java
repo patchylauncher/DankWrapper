@@ -62,7 +62,7 @@ public class DankClassLoader  extends URLClassLoader {
             String path = weed.replaceAll("\\.", "/").concat(".class");
             URL rsc = parent.getResource(path);
             if (rsc == null){
-                System.err.println("Error: failed to get bytes for class " + weed);
+                System.err.println("Warning: failed to get bytes for class " + weed);
                 return null;
             }
             in = rsc.openStream();
