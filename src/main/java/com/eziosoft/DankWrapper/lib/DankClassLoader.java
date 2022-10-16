@@ -1,6 +1,7 @@
 package com.eziosoft.DankWrapper.lib;
 
 import com.eziosoft.DankWrapper.Launch;
+import com.eziosoft.DankWrapper.debug.NotAnErrorException;
 import com.eziosoft.DankWrapper.injectors.BasicInjector;
 import org.apache.commons.io.IOUtils;
 
@@ -85,7 +86,14 @@ public class DankClassLoader  extends URLClassLoader {
             }
         }
         if (invalidClassCache.contains(name)){
-            if (Launch.isdebug) System.err.println("Error: invalid class is listed in cache: " + name);
+            if (Launch.isdebug){
+                System.err.println("Error: invalid class is listed in cache: " + name);
+                try {
+                    throw new NotAnErrorException("Dirity hack to print stack trace");
+                } catch (NotAnErrorException e){
+                    e.printStackTrace();
+                }
+            }
             throw new ClassNotFoundException("BRUH! Invalid class!");
         }
         if (cache.containsKey(name)){
