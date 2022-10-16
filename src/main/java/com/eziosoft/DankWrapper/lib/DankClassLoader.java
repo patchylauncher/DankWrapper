@@ -85,7 +85,7 @@ public class DankClassLoader  extends URLClassLoader {
             }
         }
         if (invalidClassCache.contains(name)){
-            System.err.println("Error: invalid class detected!");
+            if (Launch.isdebug) System.err.println("Error: invalid class is listed in cache: " + name);
             throw new ClassNotFoundException("BRUH! Invalid class!");
         }
         if (cache.containsKey(name)){
