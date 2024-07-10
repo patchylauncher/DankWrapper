@@ -49,6 +49,12 @@ public class DankClassLoader  extends URLClassLoader {
         this.exceptions.add(exc);
     }
 
+    // sure, we ship default exceptions
+    // but what if we want to REMOVE exceptions?
+    public void removeLoaderException(String exception){
+        this.exceptions.remove(exception);
+    }
+
     private void closeSlient(Closeable c){
         if (c != null){
             try {
