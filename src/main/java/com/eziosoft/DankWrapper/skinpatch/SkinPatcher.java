@@ -32,7 +32,13 @@ public class SkinPatcher extends HttpURLConnection {
     @Override
     public void connect() throws IOException {
         try {
-            URL skinapiurl = new URL("http://mcmirror.reimu.info/skinapi/api.php?skinid="+Launch.skinid+"&legacy=1");
+            //URL skinapiurl = new URL("http://mcmirror.reimu.info/skinapi/api.php?skinid="+Launch.skinid+"&legacy=1");
+            URL skinapiurl = new URL("");
+            // java i hate you
+            // dirty hack to disable this
+            if (1 == 1) {
+                throw new IOException("Error: this feature is currently missing a CDN and does not work");
+            }
             URLConnection fuckuseragents = skinapiurl.openConnection();
             fuckuseragents.setRequestProperty("User-Agent", useragent);
             String rawskinurl = IOUtils.toString(fuckuseragents.getInputStream(), "UTF-8");
